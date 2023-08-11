@@ -21,7 +21,7 @@ from sklearn.metrics.pairwise import pairwise_kernels
 
 
 class MSVR():
-    def __init__(self, kernel='rbf', degree=3, gamma="scale", coef0=0.0, tol=0.001, C=1.0, epsilon=0.1):
+    def __init__(self, kernel='rbf', degree=3, gamma="scale", coef0=0.0, tol=0.001, C=1.0, epsilon=0.1, n_jobs=None):
         super(MSVR, self).__init__()
         self.kernel = kernel
         self.degree = degree
@@ -30,6 +30,7 @@ class MSVR():
         self.tol = tol
         self.C = C
         self.epsilon = epsilon
+        self.n_jobs = n_jobs
 
         self._Beta = None
         self._NSV = None
@@ -43,10 +44,11 @@ class MSVR():
             "coef0": self.coef0,
             "tol": self.tol,
             "C": self.C,
-            "epsilon": self.epsilon
+            "epsilon": self.epsilon,
+            "n_jobs": self.n_jobs
         }
 
-    def set_params(self, kernel=None, degree=None, gamma=None, coef0=None, tol=None, C=None, epsilon=None):
+    def set_params(self, kernel=None, degree=None, gamma=None, coef0=None, tol=None, C=None, epsilon=None, n_jobs=None):
         if kernel is not None:
             self.kernel = kernel
         if degree is not None:
@@ -61,6 +63,8 @@ class MSVR():
             self.C = C
         if epsilon is not None:
             self.epsilon = epsilon
+        if n_jobs is not None:
+            self.n_jobs = n_jobs
 
     def fit(self, X, y):
         self._X_train = X.copy()
@@ -81,7 +85,7 @@ class MSVR():
             self._gamma = self.gamma
 
         # H = kernelmatrix(ker, x, x, par)
-        H = pairwise_kernels(X, X, metric=self.kernel, filter_params=True,
+        H = pairwise_kernels(X, X, metric=self.kernel, filter_params=True, n_jobs=self.n_jobs,
                              degree=self.degree, gamma=self._gamma, coef0=self.coef0)
 
         self._Beta = np.zeros((n_m, n_k))
@@ -201,7 +205,7 @@ class MSVR():
         self._NSV = len(i1)
 
     def predict(self, X):
-        H = pairwise_kernels(X, self._X_train, metric=self.kernel, filter_params=True,
+        H = pairwise_kernels(X, self._X_train, metric=self.kernel, filter_params=True, n_jobs=self.n_jobs,
                              degree=self.degree, gamma=self._gamma, coef0=self.coef0)
         y_pred = np.dot(H, self._Beta)
         return y_pred
