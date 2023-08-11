@@ -1,6 +1,8 @@
 """
 Multi-output Support Vector Regression
 """
+from typing import Dict
+
 # Copyright (C) 2020 Xinze Zhang, Kaishuai Xu, Siyue Yang, Yukun Bao
 # <xinze@hust.edu.cn>, <xu.kaishuai@gmail.com>, <siyue_yang@hust.edu.cn>, <yukunbao@hust.edu.cn>
 
@@ -32,6 +34,33 @@ class MSVR():
         self._Beta = None
         self._NSV = None
         self._X_train = None
+
+    def get_params(self) -> Dict[str, object]:
+        return {
+            "kernel": self.kernel,
+            "degree": self.degree,
+            "gamma": self.gamma,
+            "coef0": self.coef0,
+            "tol": self.tol,
+            "C": self.C,
+            "epsilon": self.epsilon
+        }
+
+    def set_params(self, kernel=None, degree=None, gamma=None, coef0=None, tol=None, C=None, epsilon=None):
+        if kernel is not None:
+            self.kernel = kernel
+        if degree is not None:
+            self.degree = degree
+        if gamma is not None:
+            self.gamma = gamma
+        if coef0 is not None:
+            self.coef0 = coef0
+        if tol is not None:
+            self.tol = tol
+        if C is not None:
+            self.C = C
+        if epsilon is not None:
+            self.epsilon = epsilon
 
     def fit(self, X, y):
         self._X_train = X.copy()
